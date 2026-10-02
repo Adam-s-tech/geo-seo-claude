@@ -86,9 +86,14 @@ main() {
     # `python3` symlink, so probe versioned names too and pick the first that
     # meets the minimum.
     PYTHON_CMD=""
-    for cmd in python3 python3.13 python3.12 python3.11 python3.10 python; do
+    for cmd in python3 python3.15 python3.14 python3.13 python3.12 python3.11 python3.10 python; do
         command -v "$cmd" &> /dev/null || continue
-        PY_VERSION=$("$cmd" --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        # A candidate can exist on PATH and still fail to run: a pyenv shim for
+        # a version that is installed but not active, or the Windows Store alias
+        # for python3. Under `set -euo pipefail` an unguarded failure here would
+        # end the installer with no message, so discard the candidate's stderr
+        # and fall through to the next name instead.
+        PY_VERSION=$("$cmd" --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+' | head -1 || true)
         [ -n "$PY_VERSION" ] || continue
         MAJOR=$(echo "$PY_VERSION" | cut -d. -f1)
         MINOR=$(echo "$PY_VERSION" | cut -d. -f2)

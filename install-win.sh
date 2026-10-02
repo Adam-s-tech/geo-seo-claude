@@ -90,7 +90,7 @@ main() {
     # On Windows, 'python' is typically Python 3; 'python3' may not exist.
     # Require Python >= 3.10 (requirements.txt pins Pillow/lxml that drop 3.9).
     PYTHON_CMD=""
-    for cmd in python3 python py python3.13 python3.12 python3.11 python3.10; do
+    for cmd in python3 python py python3.15 python3.14 python3.13 python3.12 python3.11 python3.10; do
         if command -v "$cmd" &> /dev/null; then
             _ver=$("$cmd" --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1 || true)
             if [ -n "$_ver" ]; then
