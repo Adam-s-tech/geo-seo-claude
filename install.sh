@@ -13,12 +13,18 @@ SKILLS_DIR="${CLAUDE_DIR}/skills"
 AGENTS_DIR="${CLAUDE_DIR}/agents"
 INSTALL_DIR="${SKILLS_DIR}/geo"
 VENV_DIR="${INSTALL_DIR}/.venv"
-VENV_PY="${VENV_DIR}/bin/python3"
+# Windows venvs (Git Bash / MSYS / Cygwin) put the interpreter at
+# Scripts/python.exe instead of bin/python3.
+case "${OSTYPE:-}" in
+    msys*|cygwin*|win32*) VENV_PY_REL="Scripts/python.exe" ;;
+    *)                    VENV_PY_REL="bin/python3" ;;
+esac
+VENV_PY="${VENV_DIR}/${VENV_PY_REL}"
 # Tilde-form path for patched references inside skill/agent .md files.
 # The tilde is intentionally kept literal — Claude Code's Bash expands
 # it when running the command later. Do NOT replace with $HOME here.
 # shellcheck disable=SC2088
-VENV_MD_PY='~/.claude/skills/geo/.venv/bin/python3'
+VENV_MD_PY="~/.claude/skills/geo/.venv/${VENV_PY_REL}"
 TEMP_DIR=$(mktemp -d)
 
 # Detect if running via curl pipe (no interactive input available)
